@@ -1,6 +1,12 @@
 # Receiver Freshness and Background Delay in UTM-Oriented LTE Uplinks: A Cross-Layer Study of STATUS Priority
 
-**Prepared local pre-upload release package; not yet publicly released. Version: v1.0-submission.**
+**Repository prepared for public release; currently PRIVATE and not yet publicly released. Version: v1.0-submission. Zenodo state: DRAFT / NOT YET PUBLISHED.**
+
+Repository: https://github.com/unLIMited72/utm-lte-freshness-crosslayer
+
+Reserved Zenodo version DOI: 10.5281/zenodo.22994406
+
+This DOI is reserved for the v1.0-submission archival snapshot. Registration occurs only when the Zenodo record is published. The record is currently unpublished; a concept DOI and actual release date are not yet available.
 
 ## Overview
 
@@ -50,7 +56,7 @@ Python 3 supports the checksum/input inspection workflow. Historical analysis us
 
 ## Citation
 
-Use [CITATION.cff](CITATION.cff). The manuscript is unpublished. The local package version is v1.0-submission; no repository URL, DOI or actual release date is asserted. Identifiers will be added only during an authorized external-release workflow.
+Use [CITATION.cff](CITATION.cff). The manuscript is unpublished. Package version v1.0-submission carries the user-confirmed reserved version DOI 10.5281/zenodo.22994406 and the existing private repository URL. The DOI reservation does not imply registration or publication. No concept DOI or release date is asserted.
 
 ## License
 

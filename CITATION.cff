@@ -12,8 +12,9 @@ authors:
     affiliation: "Department of Avionics Engineering, Hanseo University, Republic of Korea"
 version: v1.0-submission
 # date-released: not released
-# doi: unavailable; omitted rather than fabricated
-# repository-code: unavailable; omitted rather than fabricated
+doi: 10.5281/zenodo.22994406
+# Reserved version DOI for an unpublished Zenodo draft.
+repository-code: https://github.com/unLIMited72/utm-lte-freshness-crosslayer
 license:
   - GPL-2.0-only
   - CC-BY-4.0
