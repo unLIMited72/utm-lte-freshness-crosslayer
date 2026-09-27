@@ -1,0 +1,8 @@
+\begin{table}[htbp]
+\caption{HEAVY background cost: pooled FlowMonitor IP populations within runs, then equal run weighting (88 pairs). PDR differences are percentage points; latency differences are milliseconds. The primary p95 is the upper edge of the first pooled 1-ms histogram bin reaching 95\%, without interpolation; IP reception through cleanup is eligible.}\label{tab:bg}
+\small\begin{tabularx}{\textwidth}{Xrrr}\toprule
+Endpoint & FIFO & Priority & Difference\\\midrule
+PDR (\%) & \numval{PDRF} & \numval{PDRP} & \numval{PDRD} \\
+Mean IP delay (ms) & \numval{BGMeanF} & \numval{BGMeanP} & \numval{BGMeanD} \\
+Primary IP p95 (ms) & \numval{BGPF} & \numval{BGPP} & \numval{BGPD} \\\bottomrule\end{tabularx}
+\end{table}

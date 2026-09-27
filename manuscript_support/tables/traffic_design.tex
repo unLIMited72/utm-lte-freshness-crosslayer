@@ -1,0 +1,12 @@
+\begin{table}[htbp]
+\caption{Traffic and experiment structure. Both policies use the same STATUS and BG configuration within a load. Relative load refers only to BG offered load, not measured radio utilization.}\label{tab:design}
+\small\begin{tabularx}{\textwidth}{lXrr}\toprule
+Study / condition & Traffic & BG interval & Pairs \\\midrule
+All conditions & STATUS: 120 B every 200 ms & --- & --- \\
+Production OFF & BG disabled & --- & 88 \\
+Production HEAVY & BG: 300 B per enabled UE flow & 20 ms & 88 \\
+Supporting 25\% & Same BG packet size & 80 ms & 20 \\
+Supporting 50\% & Same BG packet size & 40 ms & 20 \\
+Supporting 66.7\% & Same BG packet size & 30 ms & 20 \\
+\bottomrule\end{tabularx}
+\end{table}

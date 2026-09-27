@@ -1,0 +1,3 @@
+# Recovered production helpers
+
+analysis/statistics/summarize_followup_production.py and analyze_followup_production.py are the successful production helpers recovered from retained historical project session records. Original session transcripts/logs are not distributed. They were not Git-tracked and are not relabelled as Git exports. Project-controlled release is authorized; public copies are GPL-2.0-only. Existing documented public path routing is retained; this packaging adds license comments only. Original recovery hashes and public hashes remain in SOURCE_PROVENANCE.csv; current release provenance is in PUBLIC_SOURCE_PROVENANCE.csv. No creation date is inferred from recovery. Raw-dependent execution requires external inputs and was not performed during packaging.

@@ -1,0 +1,43 @@
+item,value,evidence_class,basis
+ns-3 version,3.45,SOURCE_CONSTRUCTION; runtime object attributes not independently recorded,frozen VERSION and executable basename; run metadata says baseline commit 4059af204636298c061df368e241941fa3ff97bf; historical binary hash missing
+eNB / UAV UE count,3 / 35,EXECUTED_RECORD,"numEnbs,nUes; also manifest-bound argv"
+DL/UL bandwidth,25 /25 RB,EXECUTED_RECORD,"dlBandwidthRb,ulBandwidthRb"
+scheduler,ns3::PfFfMacScheduler,EXECUTED_RECORD,schedulerType
+RLC,RLC_UM_ALWAYS,EXECUTED_RECORD,rlcMapping; source SetDefault makes mapping explicit
+RRC,ideal RRC enabled,EXECUTED_RECORD,useIdealRrc=true
+DL / UL EARFCN,100 /18100,EXECUTED_RECORD,"dlEarfcn,ulEarfcn"
+carrier/band mapping,"E-UTRA band 1; DL 2120 MHz, UL 1930 MHz",SOURCE_CONSTRUCTION; runtime object attributes not independently recorded,deterministic mapping from confirmed EARFCNs using frozen lte-spectrum-value-helper.cc band table/formula; not a separate runtime frequency dump and not a guessed default
+eNB / UE TX power,30 /10 dBm,EXECUTED_RECORD,"enbTxPowerDbm,ueTxPowerDbm"
+eNB / UE antenna,source factories select IsotropicAntennaModel,SOURCE_DEFAULT; executed value UNRESOLVED,src/lte/helper/lte-helper.cc constructor lines 76/78; no antenna field in effective JSON; actual runtime attribute not recorded
+channel/pathloss,logdist; ns3::LogDistancePropagationLossModel,EXECUTED_RECORD,channelMode plus explicit selected branch in LteNetworkBuilder; no buildings shadowing on this branch
+log-distance exponent,2.6,EXECUTED_RECORD,pathlossExponent
+reference distance/loss,1 m /45 dB,EXECUTED_RECORD,"refDistanceM,refLossDb"
+fading enabled,true,EXECUTED_RECORD,enableFading
+exact fading model,ns3::TraceFadingLossModel,SOURCE_CONSTRUCTION; runtime object attributes not independently recorded,"explicit SetAttribute in enabled branch, not a runtime model-object dump"
+fading trace,src/lte/model/fading-traces/fading_trace_EVA_60kmph.fad,EXECUTED_RECORD,fadingTrace; SHA matches current file: 22ea331d2e77d1e1790df96003378cace72c8cbee50b666989e06b5979077aca
+fading trace parameters,length 10 s; 10000 samples; window .5 s; 100 RB,SOURCE_CONSTRUCTION; runtime object attributes not independently recorded,explicit SetFadingModelAttribute constants in lte-network-builder.cc; not separately logged
+EPC helper,PointToPointEpcHelper,SOURCE_CONSTRUCTION; runtime object attributes not independently recorded,explicit CreateObject in LteNetworkBuilder; not logged as effective field
+S1-U topology,"eNB↔SGW point-to-point, then SGW↔PGW S5",SOURCE_CONSTRUCTION; runtime object attributes not independently recorded,point-to-point-epc-helper.cc and no-backhaul-epc-helper.cc construction
+S1-U rate/delay/MTU,"source TypeId defaults: 10 Gb/s, 0 s, 2000 B",SOURCE_DEFAULT; executed value UNRESOLVED,**executed values UNRESOLVED**; no runtime attribute snapshot/CLI override found; not asserted as measured actual settings
+S5 attributes,"source TypeId defaults: 10 Gb/s, 0 s, 2000 B",SOURCE_DEFAULT; executed value UNRESOLVED,"no executed dump; constructor has MTU 3000 before TypeId attributes, so do not choose constructor value as effective evidence"
+PGW↔remote-host link,"10 Gb/s, 10 ms, MTU 1500 B",SOURCE_CONSTRUCTION; runtime object attributes not independently recorded,"explicit SetDeviceAttribute/SetChannelAttribute in InstallDevicesAndNetwork, distinct from S1-U; no runtime attribute dump"
+remote address/routing,1.0.0.0/8 link; remote host second assigned address; route 7.0.0.0/8 via interface 1,SOURCE_CONSTRUCTION; runtime object attributes not independently recorded,explicit address/routing calls; UE default route through EPC gateway interface 1
+eNB geometry,"(−500,0,25), (0,0,25), (500,0,25) m",EXECUTED_RECORD,"3 eNB, spacing 500 m, height 25 m; centered x-axis construction in ScenarioBuilder"
+mobility mode,linear (WaypointMobilityModel),EXECUTED_RECORD,mobilityMode; selected source branch
+coordinate settings,"x∈[−1000,1000], y∈[−500,500], z∈[80,150] m",EXECUTED_RECORD,"these are configured bounds, not uniformly sampled x positions"
+actual linear x endpoints,"−950,+950 m; alternating starting side by UE index",EXECUTED_RECORD,"linearMarginM=50, bounds, plus saved per-UE initialX in CRN stream manifests and waypoint construction"
+altitude/lateral position,"uniform z 80–150 m, y −500–500 m per UE, fixed along its path",SOURCE_CONSTRUCTION; runtime object attributes not independently recorded,"draw order y,z,speed; actual realized y/z are in executed CRN stream manifests"
+velocity,configured uniform speed 12–22 m/s; x-axis back-and-forth,EXECUTED_RECORD,speedMinMps/speedMaxMps and saved realized speed; source adds waypoints past horizon as needed
+mobility RNG,"seed 20260904; run 1001–1088; base run×1,000,000, mobility base,+1,+2",EXECUTED_RECORD,effective config + saved CRN stream manifest; same identity within policy pair
+handover,A3-RSRP; hysteresis 3 dB; TTT 256 ms,EXECUTED_RECORD,"numeric fields; explicit A3RsrpHandoverAlgorithm in source, model name not separately logged"
+STATUS protocol/direction,"UDP uplink UE→remote PacketSink, ports 4000–4034",SOURCE_CONSTRUCTION; runtime object attributes not independently recorded,"explicit TrafficInstaller and bindings, original flow/packet headers support addresses/ports"
+STATUS packet/interval,120 B /200 ms,EXECUTED_RECORD,"UdpClient PacketSize, including its timestamp/sequence header, not 120 B plus an extra app header"
+BG packet/interval,300 B /20 ms HEAVY; LOW disabled (configured interval 100 ms),EXECUTED_RECORD,backgroundPacketSize/backgroundIntervalMs/enableBackground; 35 BG flows only when enabled
+app start /stop,STATUS 1→120 s; BG 1→120 s,EXECUTED_RECORD,appStartSec/simTimeSec/backgroundStartSec/backgroundStopSec; stop scheduling from TrafficInstaller
+sink start/stop,0.1→120 s,SOURCE_CONSTRUCTION; runtime object attributes not independently recorded,explicit sinkApps.Start/Stop; sink does not run through cleanup
+cleanup /simulation stop,2 s /122 s,EXECUTED_RECORD,"cleanupTimeSec=2,simTimeSec=120; Stop(simTime+cleanup)"
+burst,disabled,EXECUTED_RECORD,enableBurst=false; burst defaults are irrelevant to executed traffic
+warmup /nominal window,"15 s /[15,120) s",EXECUTED_RECORD,"warmupSec,simTimeSec; applicability varies by metric"
+raw trace collection,collectors connected before attach/apps; event-driven through Run/Destroy at 122 s,SOURCE_CONSTRUCTION; runtime object attributes not independently recorded,flags confirmed in effective configs; raw tracing itself is not warmup-gated
+FlowMonitor window/bin,"enabled at 15 s, no 120-s stop; 1 ms delay bins",EXECUTED_RECORD,"warmupSec,delayBinWidthSec; InstallMonitor/Collect shows lifetime"
+original runner CLI,all 352 dictionaries match expected_config_hash,SOURCE_CONSTRUCTION (manifest-bound argv reconstruction),"recovered source construction bound to manifest; reconstructed argv, not original shell argv capture"

@@ -1,0 +1,7 @@
+table,source_data,source_config,script,output,manual_step,notes
+Table 1,config/CONFIG_EVIDENCE_CLASSIFICATION.csv,config/CONFIG_EVIDENCE_CLASSIFICATION.csv,STATIC_TEX,manuscript_support/tables/configuration.tex,static description retained,Byte-identical source/excerpt; execution not performed
+Table 2,docs/METRIC_CONTRACT.md,,STATIC_TEX,manuscript_support/tables/metrics.tex,static description retained,Byte-identical source/excerpt; execution not performed
+Table 3,docs/STUDY_DESIGN.md,config/CONFIG_EVIDENCE_CLASSIFICATION.csv,STATIC_TEX,manuscript_support/tables/traffic_design.tex,static description retained,Byte-identical source/excerpt; execution not performed
+Table 4,data/canonical_results/production_results_statistics.json,,analysis/figures/render_evidence.py,manuscript_support/tables/primary.tex,use frozen numbers.tex; no statistical estimation,Byte-identical source/excerpt; execution not performed
+Table 5,data/canonical_results/production_results_statistics.json,,analysis/figures/render_evidence.py,manuscript_support/tables/background.tex,use frozen numbers.tex; no statistical estimation,Byte-identical source/excerpt; execution not performed
+Table 6,data/canonical_results/phase9_load_level_summary.csv,,analysis/figures/render_evidence.py,manuscript_support/tables/supporting.tex,use frozen numbers.tex; no statistical estimation,Byte-identical source/excerpt; execution not performed

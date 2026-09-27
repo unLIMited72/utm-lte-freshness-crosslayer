@@ -1,0 +1,741 @@
+diff --git a/src/applications/model/udp-client.cc b/src/applications/model/udp-client.cc
+index e3ac5f6b9..32c5816da 100644
+--- a/src/applications/model/udp-client.cc
++++ b/src/applications/model/udp-client.cc
+@@ -82,6 +82,10 @@ UdpClient::GetTypeId()
+             .AddTraceSource("TxWithAddresses",
+                             "A new packet is created and sent",
+                             MakeTraceSourceAccessor(&UdpClient::m_txTraceWithAddresses),
++                            "ns3::Packet::TwoAddressTracedCallback")
++            .AddTraceSource("TxWithSeqTs",
++                            "A packet accepted by the socket after its SeqTsHeader was added",
++                            MakeTraceSourceAccessor(&UdpClient::m_txTraceWithSeqTs),
+                             "ns3::Packet::TwoAddressTracedCallback");
+     return tid;
+ }
+@@ -263,6 +267,7 @@ UdpClient::Send()
+     {
+         ++m_sent;
+         m_totalTx += p->GetSize();
++        m_txTraceWithSeqTs(p, from, to);
+ #ifdef NS3_LOG_ENABLE
+         NS_LOG_INFO("TraceDelay TX " << m_size << " bytes to " << m_peerString << " Uid: "
+                                      << p->GetUid() << " Time: " << (Simulator::Now()).As(Time::S));
+diff --git a/src/applications/model/udp-client.h b/src/applications/model/udp-client.h
+index 443803040..fe4df0536 100644
+--- a/src/applications/model/udp-client.h
++++ b/src/applications/model/udp-client.h
+@@ -95,6 +95,9 @@ class UdpClient : public SourceApplication
+     /// Callbacks for tracing the packet Tx events, includes source and destination addresses
+     TracedCallback<Ptr<const Packet>, const Address&, const Address&> m_txTraceWithAddresses;
+ 
++    /// Successful packet Tx events after the SeqTsHeader has been added
++    TracedCallback<Ptr<const Packet>, const Address&, const Address&> m_txTraceWithSeqTs;
++
+     uint32_t m_count; //!< Maximum number of packets the application will send
+     Time m_interval;  //!< Packet inter-send time
+     uint32_t m_size;  //!< Size of the sent packet (including the SeqTsHeader)
+diff --git a/src/lte/CMakeLists.txt b/src/lte/CMakeLists.txt
+index f5bfccaba..d966ac406 100644
+--- a/src/lte/CMakeLists.txt
++++ b/src/lte/CMakeLists.txt
+@@ -112,6 +112,7 @@ set(source_files
+     model/lte-rlc-header.cc
+     model/lte-rlc-sap.cc
+     model/lte-rlc-sdu-status-tag.cc
++    model/lte-rlc-sdu-lineage-tag.cc
+     model/lte-rlc-sequence-number.cc
+     model/lte-rlc-tag.cc
+     model/lte-rlc-tm.cc
+@@ -243,6 +244,7 @@ set(header_files
+     model/lte-rlc-header.h
+     model/lte-rlc-sap.h
+     model/lte-rlc-sdu-status-tag.h
++    model/lte-rlc-sdu-lineage-tag.h
+     model/lte-rlc-sequence-number.h
+     model/lte-rlc-tag.h
+     model/lte-rlc-tm.h
+diff --git a/src/lte/model/lte-rlc-sdu-lineage-tag.cc b/src/lte/model/lte-rlc-sdu-lineage-tag.cc
+new file mode 100644
+index 000000000..820136763
+--- /dev/null
++++ b/src/lte/model/lte-rlc-sdu-lineage-tag.cc
+@@ -0,0 +1,97 @@
++/*
++ * SPDX-License-Identifier: GPL-2.0-only
++ */
++
++#include "lte-rlc-sdu-lineage-tag.h"
++
++namespace ns3
++{
++
++NS_OBJECT_ENSURE_REGISTERED(LteRlcSduLineageTag);
++
++LteRlcSduLineageTag::LteRlcSduLineageTag() = default;
++
++LteRlcSduLineageTag::LteRlcSduLineageTag(uint64_t lineageId,
++                                         uint8_t trafficClass,
++                                         int64_t generationTimeNs,
++                                         int64_t applicationAttemptTimeNs)
++    : m_lineageId(lineageId),
++      m_trafficClass(trafficClass),
++      m_generationTimeNs(generationTimeNs),
++      m_applicationAttemptTimeNs(applicationAttemptTimeNs)
++{
++}
++
++TypeId
++LteRlcSduLineageTag::GetTypeId()
++{
++    static TypeId tid = TypeId("ns3::LteRlcSduLineageTag")
++                            .SetParent<Tag>()
++                            .SetGroupName("Lte")
++                            .AddConstructor<LteRlcSduLineageTag>();
++    return tid;
++}
++
++TypeId
++LteRlcSduLineageTag::GetInstanceTypeId() const
++{
++    return GetTypeId();
++}
++
++uint32_t
++LteRlcSduLineageTag::GetSerializedSize() const
++{
++    return 25;
++}
++
++void
++LteRlcSduLineageTag::Serialize(TagBuffer i) const
++{
++    i.WriteU64(m_lineageId);
++    i.WriteU8(m_trafficClass);
++    i.WriteU64(static_cast<uint64_t>(m_generationTimeNs));
++    i.WriteU64(static_cast<uint64_t>(m_applicationAttemptTimeNs));
++}
++
++void
++LteRlcSduLineageTag::Deserialize(TagBuffer i)
++{
++    m_lineageId = i.ReadU64();
++    m_trafficClass = i.ReadU8();
++    m_generationTimeNs = static_cast<int64_t>(i.ReadU64());
++    m_applicationAttemptTimeNs = static_cast<int64_t>(i.ReadU64());
++}
++
++void
++LteRlcSduLineageTag::Print(std::ostream& os) const
++{
++    os << "lineage=" << m_lineageId << ",class=" << static_cast<uint32_t>(m_trafficClass)
++       << ",generationNs=" << m_generationTimeNs
++       << ",attemptNs=" << m_applicationAttemptTimeNs;
++}
++
++uint64_t
++LteRlcSduLineageTag::GetLineageId() const
++{
++    return m_lineageId;
++}
++
++uint8_t
++LteRlcSduLineageTag::GetTrafficClass() const
++{
++    return m_trafficClass;
++}
++
++int64_t
++LteRlcSduLineageTag::GetGenerationTimeNs() const
++{
++    return m_generationTimeNs;
++}
++
++int64_t
++LteRlcSduLineageTag::GetApplicationAttemptTimeNs() const
++{
++    return m_applicationAttemptTimeNs;
++}
++
++} // namespace ns3
+diff --git a/src/lte/model/lte-rlc-sdu-lineage-tag.h b/src/lte/model/lte-rlc-sdu-lineage-tag.h
+new file mode 100644
+index 000000000..bd2872705
+--- /dev/null
++++ b/src/lte/model/lte-rlc-sdu-lineage-tag.h
+@@ -0,0 +1,57 @@
++/*
++ * SPDX-License-Identifier: GPL-2.0-only
++ */
++
++#ifndef LTE_RLC_SDU_LINEAGE_TAG_H
++#define LTE_RLC_SDU_LINEAGE_TAG_H
++
++#include "ns3/tag.h"
++
++#include <cstdint>
++
++namespace ns3
++{
++
++/**
++ * Simulation-only metadata used to identify an application SDU at RLC ingress.
++ * The tag is not serialized into the simulated packet byte buffer.
++ */
++class LteRlcSduLineageTag : public Tag
++{
++  public:
++    enum TrafficClass : uint8_t
++    {
++        UNINSTRUMENTED = 0,
++        STATUS = 1,
++        BACKGROUND = 2,
++        BURST = 3
++    };
++
++    LteRlcSduLineageTag();
++    LteRlcSduLineageTag(uint64_t lineageId,
++                        uint8_t trafficClass,
++                        int64_t generationTimeNs,
++                        int64_t applicationAttemptTimeNs);
++
++    static TypeId GetTypeId();
++    TypeId GetInstanceTypeId() const override;
++    uint32_t GetSerializedSize() const override;
++    void Serialize(TagBuffer i) const override;
++    void Deserialize(TagBuffer i) override;
++    void Print(std::ostream& os) const override;
++
++    uint64_t GetLineageId() const;
++    uint8_t GetTrafficClass() const;
++    int64_t GetGenerationTimeNs() const;
++    int64_t GetApplicationAttemptTimeNs() const;
++
++  private:
++    uint64_t m_lineageId{0};
++    uint8_t m_trafficClass{UNINSTRUMENTED};
++    int64_t m_generationTimeNs{0};
++    int64_t m_applicationAttemptTimeNs{0};
++};
++
++} // namespace ns3
++
++#endif // LTE_RLC_SDU_LINEAGE_TAG_H
+diff --git a/src/lte/model/lte-rlc-um.cc b/src/lte/model/lte-rlc-um.cc
+index 9ecbb3e0a..ad4917988 100644
+--- a/src/lte/model/lte-rlc-um.cc
++++ b/src/lte/model/lte-rlc-um.cc
+@@ -9,10 +9,12 @@
+ #include "lte-rlc-um.h"
+ 
+ #include "lte-rlc-header.h"
++#include "lte-rlc-sdu-lineage-tag.h"
+ #include "lte-rlc-sdu-status-tag.h"
+ #include "lte-rlc-tag.h"
+ 
+ #include "ns3/log.h"
++#include "ns3/enum.h"
+ #include "ns3/simulator.h"
+ 
+ namespace ns3
+@@ -72,7 +74,27 @@ LteRlcUm::GetTypeId()
+                           "timer value, otherwise it will be used this value.",
+                           UintegerValue(0),
+                           MakeUintegerAccessor(&LteRlcUm::m_discardTimerMs),
+-                          MakeUintegerChecker<uint32_t>());
++                          MakeUintegerChecker<uint32_t>())
++            .AddTraceSource("QueueState",
++                            "Post-transition RLC UM transmission queue state",
++                            MakeTraceSourceAccessor(&LteRlcUm::m_queueStateTrace),
++                            "ns3::LteRlcUm::QueueStateTracedCallback")
++            .AddTraceSource("SduLineage",
++                            "Constituent RLC SDU enqueue, service, and terminal events",
++                            MakeTraceSourceAccessor(&LteRlcUm::m_sduLineageTrace),
++                            "ns3::LteRlcUm::SduLineageTracedCallback")
++            .AddAttribute("TxSduSelectionPolicy",
++                          "SDU selection at service boundaries",
++                          EnumValue(FIFO),
++                          MakeEnumAccessor<TxSduSelectionPolicy>(&LteRlcUm::m_txSduSelectionPolicy),
++                          MakeEnumChecker(FIFO,
++                                          "FIFO",
++                                          STATUS_PRIORITY_NON_DROPPING,
++                                          "STATUS_PRIORITY_NON_DROPPING"))
++            .AddTraceSource("SduSelection",
++                            "Deterministic RLC UM SDU service-selection decisions",
++                            MakeTraceSourceAccessor(&LteRlcUm::m_sduSelectionTrace),
++                            "ns3::LteRlcUm::SduSelectionTracedCallback");
+     return tid;
+ }
+ 
+@@ -80,6 +102,14 @@ void
+ LteRlcUm::DoDispose()
+ {
+     NS_LOG_FUNCTION(this);
++    for (const auto& queued : m_txBuffer)
++    {
++        EmitSduLineage(queued.m_lineage,
++                       LINEAGE_CENSORED_RLC_DISPOSE,
++                       0,
++                       0,
++                       DISPOSITION_CENSORED_RLC_DISPOSE);
++    }
+     m_reorderingTimer.Cancel();
+     m_rbsTimer.Cancel();
+ 
+@@ -94,6 +124,19 @@ void
+ LteRlcUm::DoTransmitPdcpPdu(Ptr<Packet> p)
+ {
+     NS_LOG_FUNCTION(this << m_rnti << (uint32_t)m_lcid << p->GetSize());
++    LineageMetadata lineage;
++    LteRlcSduLineageTag lineageTag;
++    if (p->PeekPacketTag(lineageTag))
++    {
++        lineage.instrumented = true;
++        lineage.lineageId = lineageTag.GetLineageId();
++        lineage.trafficClass = lineageTag.GetTrafficClass();
++        lineage.generationTimeNs = lineageTag.GetGenerationTimeNs();
++        lineage.applicationAttemptTimeNs = lineageTag.GetApplicationAttemptTimeNs();
++        lineage.enqueueTimeNs = Simulator::Now().GetNanoSeconds();
++        lineage.originalSduBytes = p->GetSize();
++        lineage.remainingSduBytes = p->GetSize();
++    }
+     if (m_txBufferSize + p->GetSize() <= m_maxTxBufferSize)
+     {
+         if (m_enablePdcpDiscarding)
+@@ -124,10 +167,12 @@ LteRlcUm::DoTransmitPdcpPdu(Ptr<Packet> p)
+         tag.SetStatus(LteRlcSduStatusTag::FULL_SDU);
+         p->AddPacketTag(tag);
+         NS_LOG_INFO("Adding RLC SDU to Tx Buffer after adding LteRlcSduStatusTag: FULL_SDU");
+-        m_txBuffer.emplace_back(p, Simulator::Now());
++        m_txBuffer.emplace_back(p, Simulator::Now(), lineage);
+         m_txBufferSize += p->GetSize();
+         NS_LOG_LOGIC("NumOfBuffers = " << m_txBuffer.size());
+         NS_LOG_LOGIC("txBufferSize = " << m_txBufferSize);
++        EmitQueueState(QUEUE_ENQUEUE, p->GetSize());
++        EmitSduLineage(lineage, LINEAGE_ENQUEUE, 0, 0, DISPOSITION_NONE);
+     }
+     else
+     {
+@@ -137,6 +182,12 @@ LteRlcUm::DoTransmitPdcpPdu(Ptr<Packet> p)
+         NS_LOG_LOGIC("txBufferSize    = " << m_txBufferSize);
+         NS_LOG_LOGIC("packet size     = " << p->GetSize());
+         m_txDropTrace(p);
++        EmitQueueState(QUEUE_DROP_OVERFLOW, p->GetSize());
++        EmitSduLineage(lineage,
++                       LINEAGE_DROP_OVERFLOW,
++                       0,
++                       0,
++                       DISPOSITION_DROP_OVERFLOW);
+     }
+ 
+     /** Report Buffer Status */
+@@ -181,8 +232,13 @@ LteRlcUm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
+         return;
+     }
+ 
+-    Ptr<Packet> firstSegment = m_txBuffer.begin()->m_pdu->Copy();
+-    Time firstSegmentTime = m_txBuffer.begin()->m_waitingSince;
++    const uint32_t queueBytesBefore = m_txBufferSize;
++    const uint64_t lineageRlcPduId = ++m_nextLineageRlcPduId;
++
++    auto selected = SelectNextSdu();
++    Ptr<Packet> firstSegment = selected->m_pdu->Copy();
++    Time firstSegmentTime = selected->m_waitingSince;
++    LineageMetadata firstLineage = selected->m_lineage;
+ 
+     NS_LOG_LOGIC("SDUs in TxBuffer  = " << m_txBuffer.size());
+     NS_LOG_LOGIC("First SDU buffer  = " << firstSegment);
+@@ -191,7 +247,7 @@ LteRlcUm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
+     NS_LOG_LOGIC("Remove SDU from TxBuffer");
+     m_txBufferSize -= firstSegment->GetSize();
+     NS_LOG_LOGIC("txBufferSize      = " << m_txBufferSize);
+-    m_txBuffer.erase(m_txBuffer.begin());
++    m_txBuffer.erase(selected);
+ 
+     while (firstSegment && (firstSegment->GetSize() > 0) && (nextSegmentSize > 0))
+     {
+@@ -240,7 +296,8 @@ LteRlcUm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
+             {
+                 firstSegment->AddPacketTag(oldTag);
+ 
+-                m_txBuffer.insert(m_txBuffer.begin(), TxPdu(firstSegment, firstSegmentTime));
++                m_txBuffer.insert(m_txBuffer.begin(),
++                                  TxPdu(firstSegment, firstSegmentTime, firstLineage, true));
+                 m_txBufferSize += m_txBuffer.begin()->m_pdu->GetSize();
+ 
+                 NS_LOG_LOGIC("    TX buffer: Give back the remaining segment");
+@@ -269,6 +326,13 @@ LteRlcUm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
+ 
+             // Add Segment to Data field
+             dataFieldAddedSize = newSegment->GetSize();
++            RecordServiceFragment(firstLineage, dataFieldAddedSize, lineageRlcPduId);
++            if (!m_txBuffer.empty() &&
++                m_txBuffer.begin()->m_lineage.lineageId == firstLineage.lineageId &&
++                firstLineage.instrumented)
++            {
++                m_txBuffer.begin()->m_lineage = firstLineage;
++            }
+             dataField.push_back(newSegment);
+             newSegment = nullptr;
+ 
+@@ -291,6 +355,7 @@ LteRlcUm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
+                 "    IF nextSegmentSize - firstSegment->GetSize () <= 2 || txBuffer.size == 0");
+             // Add txBuffer.FirstBuffer to DataField
+             dataFieldAddedSize = firstSegment->GetSize();
++            RecordServiceFragment(firstLineage, dataFieldAddedSize, lineageRlcPduId);
+             dataField.push_back(firstSegment);
+             firstSegment = nullptr;
+ 
+@@ -321,6 +386,7 @@ LteRlcUm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
+             NS_LOG_LOGIC("    IF firstSegment < NextSegmentSize && txBuffer.size > 0");
+             // Add txBuffer.FirstBuffer to DataField
+             dataFieldAddedSize = firstSegment->GetSize();
++            RecordServiceFragment(firstLineage, dataFieldAddedSize, lineageRlcPduId);
+             dataField.push_back(firstSegment);
+ 
+             // ExtensionBit (Next_Segment - 1) = 1
+@@ -343,14 +409,21 @@ LteRlcUm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
+             NS_LOG_LOGIC("        Remove SDU from TxBuffer");
+ 
+             // (more segments)
+-            firstSegment = m_txBuffer.begin()->m_pdu->Copy();
+-            firstSegmentTime = m_txBuffer.begin()->m_waitingSince;
++            selected = SelectNextSdu();
++            firstSegment = selected->m_pdu->Copy();
++            firstSegmentTime = selected->m_waitingSince;
++            firstLineage = selected->m_lineage;
+             m_txBufferSize -= firstSegment->GetSize();
+-            m_txBuffer.pop_front();
++            m_txBuffer.erase(selected);
+             NS_LOG_LOGIC("        txBufferSize = " << m_txBufferSize);
+         }
+     }
+ 
++    if (m_txBufferSize != queueBytesBefore)
++    {
++        EmitQueueState(QUEUE_TX_OPPORTUNITY, queueBytesBefore - m_txBufferSize);
++    }
++
+     // Build RLC header
+     rlcHeader.SetSequenceNumber(m_sequenceNumber++);
+ 
+@@ -431,6 +504,152 @@ LteRlcUm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
+     }
+ }
+ 
++std::deque<LteRlcUm::TxPdu>::iterator
++LteRlcUm::SelectNextSdu()
++{
++    NS_ASSERT(!m_txBuffer.empty());
++    const auto partial = std::find_if(m_txBuffer.begin(),
++                                      m_txBuffer.end(),
++                                      [](const TxPdu& item) { return item.m_isPartial; });
++    NS_ABORT_MSG_IF(partial != m_txBuffer.end() && partial != m_txBuffer.begin(),
++                    "partial RLC UM SDU lost front-of-queue continuity");
++    if (partial != m_txBuffer.end())
++    {
++        EmitSduSelection(*partial, CONTINUE_PARTIAL_SDU);
++        return partial;
++    }
++    if (m_txSduSelectionPolicy == STATUS_PRIORITY_NON_DROPPING)
++    {
++        const auto status = std::find_if(
++            m_txBuffer.begin(),
++            m_txBuffer.end(),
++            [](const TxPdu& item) {
++                return item.m_lineage.instrumented &&
++                       item.m_lineage.trafficClass == LteRlcSduLineageTag::STATUS;
++            });
++        if (status != m_txBuffer.end())
++        {
++            EmitSduSelection(*status, SELECT_STATUS_PRIORITY);
++            return status;
++        }
++    }
++    EmitSduSelection(m_txBuffer.front(), SELECT_FIFO);
++    return m_txBuffer.begin();
++}
++
++void
++LteRlcUm::EmitSduSelection(const TxPdu& selected, SduSelectionAction action)
++{
++    uint32_t statusCount = 0;
++    uint32_t statusBytes = 0;
++    uint32_t otherCount = 0;
++    uint32_t otherBytes = 0;
++    for (const auto& item : m_txBuffer)
++    {
++        if (item.m_lineage.instrumented &&
++            item.m_lineage.trafficClass == LteRlcSduLineageTag::STATUS)
++        {
++            ++statusCount;
++            statusBytes += item.m_pdu->GetSize();
++        }
++        else
++        {
++            ++otherCount;
++            otherBytes += item.m_pdu->GetSize();
++        }
++    }
++    m_sduSelectionTrace(m_rnti,
++                        m_lcid,
++                        static_cast<uint8_t>(m_txSduSelectionPolicy),
++                        static_cast<uint8_t>(action),
++                        selected.m_lineage.lineageId,
++                        selected.m_lineage.trafficClass,
++                        selected.m_lineage.generationTimeNs,
++                        selected.m_waitingSince.GetNanoSeconds(),
++                        selected.m_pdu->GetSize(),
++                        m_txBufferSize,
++                        statusCount,
++                        statusBytes,
++                        otherCount,
++                        otherBytes);
++}
++
++void
++LteRlcUm::EmitSduLineage(const LineageMetadata& metadata,
++                         SduLineageEvent event,
++                         uint64_t rlcPduId,
++                         uint32_t segmentBytes,
++                         SduLineageDisposition disposition)
++{
++    if (!metadata.instrumented)
++    {
++        return;
++    }
++    m_sduLineageTrace(m_rnti,
++                      m_lcid,
++                      static_cast<uint8_t>(event),
++                      metadata.lineageId,
++                      metadata.trafficClass,
++                      metadata.generationTimeNs,
++                      metadata.applicationAttemptTimeNs,
++                      metadata.enqueueTimeNs,
++                      metadata.originalSduBytes,
++                      segmentBytes,
++                      metadata.bytesServedTotal,
++                      metadata.remainingSduBytes,
++                      rlcPduId,
++                      static_cast<uint8_t>(disposition));
++}
++
++void
++LteRlcUm::RecordServiceFragment(LineageMetadata& metadata,
++                                uint32_t segmentBytes,
++                                uint64_t rlcPduId)
++{
++    if (!metadata.instrumented)
++    {
++        return;
++    }
++    NS_ABORT_MSG_IF(segmentBytes == 0, "lineage service fragment must contain bytes");
++    NS_ABORT_MSG_IF(segmentBytes > metadata.remainingSduBytes,
++                    "lineage service bytes exceed remaining SDU bytes");
++    metadata.hasStartedService = true;
++    metadata.bytesServedTotal += segmentBytes;
++    metadata.remainingSduBytes -= segmentBytes;
++    EmitSduLineage(metadata,
++                   LINEAGE_SERVICE_FRAGMENT,
++                   rlcPduId,
++                   segmentBytes,
++                   DISPOSITION_NONE);
++    if (metadata.remainingSduBytes == 0)
++    {
++        NS_ABORT_MSG_IF(metadata.bytesServedTotal != metadata.originalSduBytes,
++                        "lineage byte conservation failed at final service");
++        EmitSduLineage(metadata,
++                       LINEAGE_FULLY_SERVED,
++                       rlcPduId,
++                       0,
++                       DISPOSITION_FULLY_SERVED);
++    }
++}
++
++void
++LteRlcUm::EmitQueueState(QueueEventReason reason, uint32_t affectedBytes)
++{
++    const bool empty = m_txBuffer.empty();
++    const uint64_t holDelayNs =
++        empty ? 0 : static_cast<uint64_t>((Simulator::Now() - m_txBuffer.front().m_waitingSince)
++                                             .GetNanoSeconds());
++    m_queueStateTrace(m_rnti,
++                      m_lcid,
++                      static_cast<uint8_t>(reason),
++                      m_txBufferSize,
++                      static_cast<uint32_t>(m_txBuffer.size()),
++                      holDelayNs,
++                      empty,
++                      affectedBytes);
++}
++
+ void
+ LteRlcUm::DoNotifyHarqDeliveryFailure()
+ {
+diff --git a/src/lte/model/lte-rlc-um.h b/src/lte/model/lte-rlc-um.h
+index 4cd516f06..43a83bc9e 100644
+--- a/src/lte/model/lte-rlc-um.h
++++ b/src/lte/model/lte-rlc-um.h
+@@ -26,6 +26,45 @@ namespace ns3
+ class LteRlcUm : public LteRlc
+ {
+   public:
++    enum QueueEventReason : uint8_t
++    {
++        QUEUE_ENQUEUE = 0,
++        QUEUE_TX_OPPORTUNITY = 1,
++        QUEUE_DROP_OVERFLOW = 2
++    };
++
++    enum SduLineageEvent : uint8_t
++    {
++        LINEAGE_ENQUEUE = 0,
++        LINEAGE_SERVICE_FRAGMENT = 1,
++        LINEAGE_FULLY_SERVED = 2,
++        LINEAGE_DROP_OVERFLOW = 3,
++        LINEAGE_CENSORED_SIM_END = 4,
++        LINEAGE_CENSORED_RLC_DISPOSE = 5
++    };
++
++    enum SduLineageDisposition : uint8_t
++    {
++        DISPOSITION_NONE = 0,
++        DISPOSITION_FULLY_SERVED = 1,
++        DISPOSITION_DROP_OVERFLOW = 2,
++        DISPOSITION_CENSORED_SIM_END = 3,
++        DISPOSITION_CENSORED_RLC_DISPOSE = 4
++    };
++
++    enum TxSduSelectionPolicy : uint8_t
++    {
++        FIFO = 0,
++        STATUS_PRIORITY_NON_DROPPING = 1
++    };
++
++    enum SduSelectionAction : uint8_t
++    {
++        SELECT_FIFO = 0,
++        SELECT_STATUS_PRIORITY = 1,
++        CONTINUE_PARTIAL_SDU = 2
++    };
++
+     LteRlcUm();
+     ~LteRlcUm() override;
+     /**
+@@ -52,6 +91,16 @@ class LteRlcUm : public LteRlc
+     void DoReceivePdu(LteMacSapUser::ReceivePduParameters rxPduParams) override;
+ 
+   private:
++    void EmitQueueState(QueueEventReason reason, uint32_t affectedBytes);
++    struct LineageMetadata;
++    void EmitSduLineage(const LineageMetadata& metadata,
++                        SduLineageEvent event,
++                        uint64_t rlcPduId,
++                        uint32_t segmentBytes,
++                        SduLineageDisposition disposition);
++    void RecordServiceFragment(LineageMetadata& metadata,
++                               uint32_t segmentBytes,
++                               uint64_t rlcPduId);
+     /// Expire reordering timer
+     void ExpireReorderingTimer();
+     /// Expire RBS timer
+@@ -89,6 +138,39 @@ class LteRlcUm : public LteRlc
+     uint32_t m_maxTxBufferSize; ///< maximum transmit buffer status
+     uint32_t m_txBufferSize;    ///< transmit buffer size
+ 
++    TracedCallback<uint16_t, uint8_t, uint8_t, uint32_t, uint32_t, uint64_t, bool, uint32_t>
++        m_queueStateTrace; ///< post-transition transmission queue state
++
++    TracedCallback<uint16_t,
++                   uint8_t,
++                   uint8_t,
++                   uint64_t,
++                   uint8_t,
++                   int64_t,
++                   int64_t,
++                   int64_t,
++                   uint32_t,
++                   uint32_t,
++                   uint32_t,
++                   uint32_t,
++                   uint64_t,
++                   uint8_t>
++        m_sduLineageTrace; ///< constituent SDU lineage and service events
++
++    struct LineageMetadata
++    {
++        bool instrumented{false};
++        uint64_t lineageId{0};
++        uint8_t trafficClass{0};
++        int64_t generationTimeNs{0};
++        int64_t applicationAttemptTimeNs{0};
++        int64_t enqueueTimeNs{0};
++        uint32_t originalSduBytes{0};
++        uint32_t remainingSduBytes{0};
++        uint32_t bytesServedTotal{0};
++        bool hasStartedService{false};
++    };
++
+     /**
+      * @brief Store an incoming (from layer above us) PDU, waiting to transmit it
+      */
+@@ -101,7 +183,19 @@ class LteRlcUm : public LteRlc
+          */
+         TxPdu(const Ptr<Packet>& pdu, const Time& time)
+             : m_pdu(pdu),
+-              m_waitingSince(time)
++              m_waitingSince(time),
++              m_isPartial(false)
++        {
++        }
++
++        TxPdu(const Ptr<Packet>& pdu,
++              const Time& time,
++              const LineageMetadata& lineage,
++              bool isPartial = false)
++            : m_pdu(pdu),
++              m_waitingSince(time),
++              m_lineage(lineage),
++              m_isPartial(isPartial)
+         {
+         }
+ 
+@@ -109,8 +203,13 @@ class LteRlcUm : public LteRlc
+ 
+         Ptr<Packet> m_pdu;   ///< PDU
+         Time m_waitingSince; ///< Layer arrival time
++        LineageMetadata m_lineage; ///< application SDU identity and service accounting
++        bool m_isPartial;          ///< true after a prior fragment has been served
+     };
+ 
++    std::deque<TxPdu>::iterator SelectNextSdu();
++    void EmitSduSelection(const TxPdu& selected, SduSelectionAction action);
++
+     std::deque<TxPdu> m_txBuffer;               ///< Transmission buffer
+     std::map<uint16_t, Ptr<Packet>> m_rxBuffer; ///< Reception buffer
+     std::vector<Ptr<Packet>> m_reasBuffer;      ///< Reassembling buffer
+@@ -121,6 +220,24 @@ class LteRlcUm : public LteRlc
+      * State variables. See section 7.1 in TS 36.322
+      */
+     SequenceNumber10 m_sequenceNumber; ///< VT(US)
++    uint64_t m_nextLineageRlcPduId{0}; ///< trace-only identifier for transmitted RLC PDUs
++    TxSduSelectionPolicy m_txSduSelectionPolicy{FIFO}; ///< deterministic service-order policy
++
++    TracedCallback<uint16_t,
++                   uint8_t,
++                   uint8_t,
++                   uint8_t,
++                   uint64_t,
++                   uint8_t,
++                   int64_t,
++                   int64_t,
++                   uint32_t,
++                   uint32_t,
++                   uint32_t,
++                   uint32_t,
++                   uint32_t,
++                   uint32_t>
++        m_sduSelectionTrace; ///< selected SDU and pre-selection queue composition
+ 
+     SequenceNumber10 m_vrUr; ///< VR(UR)
+     SequenceNumber10 m_vrUx; ///< VR(UX)

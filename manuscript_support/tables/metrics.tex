@@ -1,0 +1,15 @@
+\begin{table}[htbp]
+\caption{Metric populations, windows, and within-run aggregation. All inferential comparisons use paired runs. Timing units are ms except queue bytes (B) and PDR (\%). Exclusion and boundary rules are specified in the text.}\label{tab:metrics}
+\small\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{.17\textwidth}>{\raggedright\arraybackslash}p{.26\textwidth}>{\raggedright\arraybackslash}p{.19\textwidth}>{\raggedright\arraybackslash}X}\toprule
+Metric & Population & Window & Within-run aggregation \\\midrule
+AoI p95 / mean & Continuous defined receiver age per STATUS UE & Defined exposure in 15--120 s & Per-UE time quantile / time average; equal-UE mean \\
+Delivery-age p95 & Fresh first app RX; RX minus generation & RX in $[15,120)$ s & Per-UE linear p95; equal-UE mean \\
+Useful-gap p95 & Adjacent selected fresh app RXs & Both RXs in $[15,120)$ s & Per-UE linear p95; equal-UE mean \\
+Waiting p95 & STATUS enqueue and first fragment observed & Whole RLC lifecycle & Per-UE linear p95; equal-UE mean \\
+Residence p95 & Fully served STATUS lineages & Whole RLC lifecycle & Per-UE linear p95; equal-UE mean \\
+Queue bytes & Observed queue post-states & $[15,120)$ s & Time average per UE; equal-UE mean \\
+BG PDR & Tracked IP TX and destination RX & TX from 15 s; RX through cleanup & Pooled RX / TX \\
+BG mean delay & Received tracked BG IP packets & Same monitor population & Pooled delay sum / RX \\
+BG primary p95 & Received tracked BG IP histogram counts & Same monitor population & Pooled 1-ms bin upper-edge quantile \\
+\bottomrule\end{tabularx}
+\end{table}

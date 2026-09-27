@@ -1,0 +1,46 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Public release license annotation: 2026-09-27. See LICENSES/GPL-2.0-only.txt.
+build_lib(
+  LIBNAME handover-congestion
+  SOURCE_FILES
+    model/experiment-config.cc
+    model/scenario-builder.cc
+    model/lte-network-builder.cc
+    model/traffic-installer.cc
+    model/baseline-trace-collector.cc
+    model/flow-metrics.cc
+    model/result-writer.cc
+    model/application-trace-collector.cc
+    model/detailed-handover-event-collector.cc
+    model/rlc-queue-trace-collector.cc
+    model/packet-lineage-trace-collector.cc
+    model/rlc-lineage-trace-collector.cc
+    model/rlc-policy-decision-trace-collector.cc
+  HEADER_FILES
+    model/experiment-config.h
+    model/scenario-builder.h
+    model/lte-network-builder.h
+    model/traffic-installer.h
+    model/baseline-trace-collector.h
+    model/flow-metrics.h
+    model/result-writer.h
+    model/application-trace-collector.h
+    model/detailed-handover-event-collector.h
+    model/rlc-queue-trace-collector.h
+    model/packet-lineage-trace-collector.h
+    model/rlc-lineage-trace-collector.h
+    model/rlc-policy-decision-trace-collector.h
+  LIBRARIES_TO_LINK
+    ${libapplications}
+    ${libbuildings}
+    ${libcore}
+    ${libflow-monitor}
+    ${libinternet}
+    ${liblte}
+    ${libmobility}
+    ${libnetwork}
+    ${libpoint-to-point}
+  TEST_SOURCES
+    test/handover-congestion-config-test.cc
+    test/packet-lineage-test.cc
+)

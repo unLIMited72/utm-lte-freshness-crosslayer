@@ -1,0 +1,7 @@
+LICENSE SCOPE INDEX
+
+Software is licensed under GPL-2.0-only: ns3 custom/modified source and patches, analysis Python tools, reproduction/verify_package.py, and .gitignore packaging instructions. See LICENSES/GPL-2.0-only.txt. Existing upstream copyright, attribution and license notices are preserved.
+
+Project-controlled processed data, summaries, configuration exports, numerical bindings, author figures/table sources and original documentation are licensed under Creative Commons Attribution 4.0 International (CC BY 4.0), to the extent of rights held. See LICENSES/CC-BY-4.0.txt. This grant does not assert exclusive rights over bare facts.
+
+Third-party publications and their content are not relicensed. Bibliography files contain citation metadata/links and project annotations only. License texts and upstream notices retain their original terms. No software is offered under CC BY. See docs/LICENSE_SCOPE.md and NOTICE for path scopes and attribution. This index does not replace the included license terms.

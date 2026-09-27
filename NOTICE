@@ -1,0 +1,12 @@
+UPSTREAM AND PROJECT ATTRIBUTION
+
+ns-3 version 3.45: https://www.nsnam.org/ ; source https://gitlab.com/nsnam/ns-3-dev . Baseline 4059af204636298c061df368e241941fa3ff97bf; production ec84414f367b0f525a700c30d13986667e17e1d8.
+RLC UM: Copyright 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC); upstream author Manuel Requena. UDP client: Copyright 2007, 2008, 2009 INRIA and UDCAST; upstream author Amine Ismail. Original headers, emails and GPL-2.0-only notices are retained. The FSF GPL license text and CC license text are reproduced verbatim under their own terms.
+
+Project changes add packet-event/lineage instrumentation, queue observations, STATUS service selection and the custom handover-congestion module. All seven historical patch targets have full release representations under ns3/modified_source/ with per-file change descriptions and dates from the recorded Git history. RLC records include d118456d09b579cb30a98cf1a577d0046a24e640 at 2026-09-04T17:35:56+09:00; additional earlier revision dates are also recorded. Notice/license annotation date: 2026-09-27. No original creation year or copyright owner is invented.
+
+The exact historical production patch is retained as provenance. Apply the separately supplied release_notice.patch after it, or use the annotated modified_source/ files. See ns3/README.md. The historical patch is not represented as the complete noticed release on its own.
+
+Two production helpers were recovered from retained historical project session records. Original session transcripts/logs are not distributed. Their original/public hashes and concise provenance are documented. No raw interaction records or private approvals are bundled.
+
+GPL-2.0-only applies to software; CC BY 4.0 applies to project-controlled data/original documentation as mapped in docs/LICENSE_SCOPE.md. Third-party reference works are citation-only and not relicensed. No full upstream source distribution, executable, article PDFs or full raw campaign is included. This NOTICE is informational and does not replace licenses or per-file obligations.

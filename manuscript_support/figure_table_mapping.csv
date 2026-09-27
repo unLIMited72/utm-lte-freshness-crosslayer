@@ -1,0 +1,15 @@
+item,source,output
+Figure 1,docs/STUDY_DESIGN.md,manuscript_support/figures/f1_system.pdf
+Figure 2,ns3/status_priority_production.patch,manuscript_support/figures/f3_selection.pdf
+Figure 3,docs/METRIC_CONTRACT.md,manuscript_support/figures/f2_lineage.pdf
+Figure 4,docs/STUDY_DESIGN.md,manuscript_support/figures/f4_design.pdf
+Figure 5,data/canonical_results/production_results_statistics.json,manuscript_support/figures/f5_primary.pdf
+Figure 6,data/canonical_results/phase9_endpoint_summary.csv;data/canonical_results/production_results_statistics.json,manuscript_support/figures/f6_mechanism.pdf
+Figure 7,data/canonical_results/production_results_statistics.json,manuscript_support/figures/f7_cost.pdf
+Figure 8,data/canonical_results/phase9_load_level_summary.csv,manuscript_support/figures/f8_load.pdf
+Table 1,config/CONFIG_EVIDENCE_CLASSIFICATION.csv,manuscript_support/tables/configuration.tex
+Table 2,docs/METRIC_CONTRACT.md,manuscript_support/tables/metrics.tex
+Table 3,docs/STUDY_DESIGN.md,manuscript_support/tables/traffic_design.tex
+Table 4,data/canonical_results/production_results_statistics.json,manuscript_support/tables/primary.tex
+Table 5,data/canonical_results/production_results_statistics.json,manuscript_support/tables/background.tex
+Table 6,data/canonical_results/phase9_load_level_summary.csv,manuscript_support/tables/supporting.tex

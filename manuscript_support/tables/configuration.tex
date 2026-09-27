@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\caption{Simulation settings confirmed by executed production configuration records. Mobility geometry combines recorded settings with the documented mobility construction; bounds are not a claim of uniformly sampled horizontal starting positions. DL and UL denote downlink and uplink; RB is resource block; EARFCN is the E-UTRA absolute radio-frequency channel number. EVA denotes extended vehicular A; RSRP denotes reference signal received power. Unrecorded runtime attributes are discussed in Section~\ref{sec:repro}.}\label{tab:config}
+\small\begin{tabularx}{\textwidth}{lX}\toprule
+Item & Executed setting \\\midrule
+eNBs / UAV UEs & 3 / 35 \\
+Radio bandwidth & 25 RB in each of downlink and uplink \\
+DL / UL EARFCN & 100 / 18100 \\
+eNB / UE transmit power & 30 / 10 dBm \\
+MAC / RLC / RRC & Proportional fair (\texttt{PfFfMacScheduler}); UM; ideal RRC \\
+Propagation & Log-distance; exponent 2.6; reference 1 m, 45 dB \\
+Fading & Enabled; recorded EVA 60 km/h trace file \\
+eNB geometry & 500-m spacing, height 25 m; centered horizontal row \\
+Configured position bounds & $x\in[-1000,1000]$, $y\in[-500,500]$, $z\in[80,150]$ m \\
+Linear mobility & $x$ endpoints $-950,+950$ m; configured speed 12--22 m/s \\
+Handover settings & A3-RSRP mode; hysteresis 3 dB; time-to-trigger 256 ms \\
+Generation / cleanup & Application start 1 s; stop 120 s; cleanup 2 s \\
+Nominal freshness window & $[15,120)$ s; metric-specific exceptions in Table~\ref{tab:metrics} \\
+\bottomrule\end{tabularx}
+\end{table}
