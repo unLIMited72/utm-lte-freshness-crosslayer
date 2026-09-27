@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "Please cite the associated manuscript and, once released, the versioned reproducibility package."
+message: "Please cite the associated manuscript and the versioned reproducibility package."
 type: software
 title: "Receiver Freshness and Background Delay in UTM-Oriented LTE Uplinks: A Cross-Layer Study of STATUS Priority — Reproducibility Package"
 authors:
@@ -11,9 +11,9 @@ authors:
     given-names: Wonhyuk
     affiliation: "Department of Avionics Engineering, Hanseo University, Republic of Korea"
 version: v1.0-submission
-# date-released: not released
+date-released: "2026-09-27"
 doi: 10.5281/zenodo.22994406
-# Reserved version DOI for an unpublished Zenodo draft.
+# Published version DOI for the fixed v1.0-submission archive.
 repository-code: https://github.com/unLIMited72/utm-lte-freshness-crosslayer
 license:
   - GPL-2.0-only

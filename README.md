@@ -1,12 +1,16 @@
 # Receiver Freshness and Background Delay in UTM-Oriented LTE Uplinks: A Cross-Layer Study of STATUS Priority
 
-**Repository prepared for public release; currently PRIVATE and not yet publicly released. Version: v1.0-submission. Zenodo state: DRAFT / NOT YET PUBLISHED.**
+**Repository status: PUBLIC. Archival package: PUBLISHED on Zenodo. Version: v1.0-submission.**
 
 Repository: https://github.com/unLIMited72/utm-lte-freshness-crosslayer
 
-Reserved Zenodo version DOI: 10.5281/zenodo.22994406
+Version-frozen archival record: https://doi.org/10.5281/zenodo.22994406
 
-This DOI is reserved for the v1.0-submission archival snapshot. Registration occurs only when the Zenodo record is published. The record is currently unpublished; a concept DOI and actual release date are not yet available.
+All Zenodo versions: https://doi.org/10.5281/zenodo.22994405
+
+Zenodo publication date: 2026-09-27.
+
+The immutable `v1.0-submission` tag remains fixed to commit `33685ca67cd383e7069d7e47d1438219a83bdf91`. Later main-branch changes synchronize publication metadata only; they do not replace the archived scientific snapshot. The published archive and bundled manifests/checksums remain unchanged. On main, README.md and CITATION.cff intentionally differ from those snapshot checksums. Use the fixed tag for strict whole-snapshot checksum validation; source, data and numerical bindings are unchanged.
 
 ## Overview
 
@@ -42,7 +46,7 @@ Python 3 supports the checksum/input inspection workflow. Historical analysis us
 ## Analysis workflow
 
 1. Read the metric and window contracts before interpreting any CSV.
-2. Run `python3 reproduction/verify_package.py` from this repository to check files, hashes and stored-value bindings only.
+2. From the fixed `v1.0-submission` tag, run `python3 reproduction/verify_package.py` to check files, snapshot hashes and stored-value bindings only. On main, its two README/CFF checksum differences reflect the publication-metadata update described above.
 3. Inspect the analysis code; do not treat raw-dependent helpers as a one-command replay.
 4. Consult [expected outputs](reproduction/expected_outputs.md) and input requirements before any later, separately authorized execution.
 
@@ -56,7 +60,7 @@ Python 3 supports the checksum/input inspection workflow. Historical analysis us
 
 ## Citation
 
-Use [CITATION.cff](CITATION.cff). The manuscript is unpublished. Package version v1.0-submission carries the user-confirmed reserved version DOI 10.5281/zenodo.22994406 and the existing private repository URL. The DOI reservation does not imply registration or publication. No concept DOI or release date is asserted.
+Use [CITATION.cff](CITATION.cff). The manuscript remains unpublished; the reproducibility package was published on Zenodo on 2026-09-27. Cite version DOI https://doi.org/10.5281/zenodo.22994406 for the fixed v1.0-submission artifact. Concept DOI https://doi.org/10.5281/zenodo.22994405 identifies all Zenodo versions and does not replace the version-specific DOI.
 
 ## License
 
