@@ -21,11 +21,12 @@ license:
 # Licenses apply by path scope; see LICENSE and docs/LICENSE_SCOPE.md.
 preferred-citation:
   type: unpublished
-  title: "Receiver Freshness and Background Delay in UTM-Oriented LTE Uplinks: A Cross-Layer Study of STATUS Priority"
+  title: "An ns-3–Based Study of Mobile Network Characteristics in Low-Altitude UTM Service Environments: Receiver Freshness and Background Delay"
   authors:
+    - family-names: Choi
+      given-names: Won-hyuk
+      orcid: "https://orcid.org/0009-0003-0754-2494"
     - family-names: Lim
       given-names: Seoungjun
       orcid: "https://orcid.org/0009-0004-4911-8285"
-    - family-names: Choi
-      given-names: Wonhyuk
   notes: "Manuscript prepared for Future Transportation; not a published article."

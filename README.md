@@ -1,4 +1,4 @@
-# Receiver Freshness and Background Delay in UTM-Oriented LTE Uplinks: A Cross-Layer Study of STATUS Priority
+# An ns-3–Based Study of Mobile Network Characteristics in Low-Altitude UTM Service Environments: Receiver Freshness and Background Delay
 
 **Repository status: PUBLIC. Archival package: PUBLISHED on Zenodo. Version: v1.0-submission.**
 
@@ -60,6 +60,10 @@ Python 3 supports the checksum/input inspection workflow. Historical analysis us
 
 ## Citation
 
+Associated manuscript (unpublished): **An ns-3–Based Study of Mobile Network Characteristics in Low-Altitude UTM Service Environments: Receiver Freshness and Background Delay**. Manuscript authors, in order: Won-hyuk Choi (ORCID https://orcid.org/0009-0003-0754-2494); Seoungjun Lim (ORCID https://orcid.org/0009-0004-4911-8285). Corresponding author: Won-hyuk Choi (choiwh@hanseo.ac.kr).
+
+The top-level software/resource authors in CITATION.cff remain the original artifact creators; preferred-citation identifies the current manuscript authors. Historical resource titles, creator names and the fixed archive retain their original attribution. Manuscript metadata corrections do not change software/data ownership or the archived scientific files.
+
 Use [CITATION.cff](CITATION.cff). The manuscript remains unpublished; the reproducibility package was published on Zenodo on 2026-09-27. Cite version DOI https://doi.org/10.5281/zenodo.22994406 for the fixed v1.0-submission artifact. Concept DOI https://doi.org/10.5281/zenodo.22994405 identifies all Zenodo versions and does not replace the version-specific DOI.
 
 ## License
@@ -72,4 +76,4 @@ Software is licensed under GPL-2.0-only; project-controlled data and original do
 
 ## Contact
 
-Seoungjun Lim: limcraft7260@gmail.com; ORCID 0009-0004-4911-8285. Corresponding author Wonhyuk Choi: choiwh@hanseo.ac.kr. Both: Department of Avionics Engineering, Hanseo University, Republic of Korea.
+Manuscript corresponding author: Won-hyuk Choi, choiwh@hanseo.ac.kr; ORCID 0009-0003-0754-2494. Manuscript coauthor and resource contact: Seoungjun Lim, limcraft7260@gmail.com; ORCID 0009-0004-4911-8285. Manuscript affiliation: Department of Avionics, Hanseo University, Republic of Korea.
